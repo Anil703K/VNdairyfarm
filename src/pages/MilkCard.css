@@ -1,0 +1,75 @@
+.product-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  margin: 20px auto;
+  background-color: #fff;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.Addbtn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #28a745;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.Addbtn:hover {
+  background-color: #218838;
+}
+
+.order-form {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-form input,
+.order-form textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.submit-btn {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.success-msg {
+  margin-top: 15px;
+  font-weight: bold;
+  color: green;
+  font-size: 16px;
+}
+
+.out-of-stock {
+  margin-top: 15px;
+  color: red;
+  font-weight: bold;
+  font-size: 16px;
+}
