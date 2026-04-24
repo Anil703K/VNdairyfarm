@@ -1,0 +1,33 @@
+{
+  "files": {
+    "main.css": "/static/css/main.37890ccd.css",
+    "main.js": "/static/js/main.fed19d48.js",
+    "static/media/snacks.png": "/static/media/snacks.e08ac04118898dc8ff52.png",
+    "static/media/organic.png": "/static/media/organic.3da03904397d78e0ba0e.png",
+    "static/media/flavoredmilk.png": "/static/media/flavoredmilk.cdf8e55be24ea5390142.png",
+    "static/media/yogurt.png": "/static/media/yogurt.0495d2f267b22620108e.png",
+    "static/media/buffalomilk.png": "/static/media/buffalomilk.d564a0da4e11b8c236d3.png",
+    "static/media/icecream.png": "/static/media/icecream.9964e4202579697872f9.png",
+    "static/media/paneer.png": "/static/media/paneer.c697abb61377770e96fe.png",
+    "static/media/milkpowder.png": "/static/media/milkpowder.d19452670d93ff9806cc.png",
+    "static/media/cowmilk.png": "/static/media/cowmilk.53937a5696ee4a12deff.png",
+    "static/media/condensed.png": "/static/media/condensed.efd7133058d3689652ef.png",
+    "static/media/buttermilk.png": "/static/media/buttermilk.84713d5b654a2039e849.png",
+    "static/media/cream.png": "/static/media/cream.89e2cd496faba67078a0.png",
+    "static/media/ghee.png": "/static/media/ghee.4c76ca799fa7e3b82111.png",
+    "static/media/butter.png": "/static/media/butter.7246337b8949c017684f.png",
+    "static/media/image3.png": "/static/media/image3.a91df7f3a7c332bec85c.png",
+    "static/media/logo.png": "/static/media/logo.781c77a87dde8d40ab24.png",
+    "static/media/image2.png": "/static/media/image2.94e10bd62b157f12ab57.png",
+    "static/media/image1.png": "/static/media/image1.49cd2505375e26bc7af8.png",
+    "static/media/aboutus.png": "/static/media/aboutus.3e56c9e1bc48e0923e31.png",
+    "static/media/body_1.png": "/static/media/body_1.cad73ffdddf1f6332563.png",
+    "index.html": "/index.html",
+    "main.37890ccd.css.map": "/static/css/main.37890ccd.css.map",
+    "main.fed19d48.js.map": "/static/js/main.fed19d48.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.37890ccd.css",
+    "static/js/main.fed19d48.js"
+  ]
+}
