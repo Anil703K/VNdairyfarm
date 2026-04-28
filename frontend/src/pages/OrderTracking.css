@@ -1,0 +1,81 @@
+.tracking-page {
+  max-width: 900px;
+  margin: 28px auto;
+  padding: 0 16px 40px;
+}
+
+.tracking-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.tracking-card h1 {
+  margin-top: 0;
+}
+
+.tracking-card p {
+  margin: 8px 0;
+  color: #334155;
+}
+
+.tracking-timeline {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 16px;
+}
+
+.tracking-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.tracking-step.done {
+  color: #0f766e;
+}
+
+.tracking-step.active {
+  color: #1d4ed8;
+}
+
+.tracking-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.tracking-items {
+  margin: 8px 0 14px;
+  padding-left: 18px;
+  color: #334155;
+}
+
+.tracking-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tracking-actions button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tracking-actions button:last-child {
+  background: #475569;
+}
+
+.tracking-error {
+  color: #b91c1c;
+  font-weight: 600;
+}

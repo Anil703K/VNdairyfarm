@@ -1,25 +1,33 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./ProductCard.css";
 import { createOrder } from "../../services/apiClient";
+import { useCart } from "../../context/CartContext";
 
 const ProductsCard = ({ product }) => {
+  const { addToCart } = useCart();
   const [status, setStatus] = useState("initial");
   const [quantity, setQuantity] = useState(1);
   const [isPlacing, setIsPlacing] = useState(false);
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [notificationStatus, setNotificationStatus] = useState(null);
+  const [showCartToast, setShowCartToast] = useState(false);
 
   const handleOrderClick = () => {
     if (product.available) {
       setStatus("form");
       setMessage("");
-      setNotificationStatus(null);
       setIsModalOpen(true);
     } else {
       setStatus("unavailable");
     }
+  };
+  const handleAddToCart = () => {
+    if (!product.available) return;
+    addToCart(product, 1);
+    setMessage("");
+    setStatus("initial");
+    setShowCartToast(true);
   };
 
   const totalPrice = useMemo(() => Number(product.price) * quantity, [product.price, quantity]);
@@ -70,10 +78,9 @@ const ProductsCard = ({ product }) => {
     e.preventDefault();
     setIsPlacing(true);
     try {
-      const response = await createOrder({ product: product, quantity });
+      await createOrder({ product: product, quantity });
       setStatus("success");
-      setMessage("Order placed successfully .");
-      setNotificationStatus(response.notificationStatus || null);
+      setMessage("Order placed successfully.");
       setShowToast(true);
       triggerHapticAndSound();
     } catch (err) {
@@ -85,20 +92,29 @@ const ProductsCard = ({ product }) => {
 
   useEffect(() => {
     if (!showToast) return undefined;
-    const timer = setTimeout(() => setShowToast(false), 2400);
+    const timer = setTimeout(() => setShowToast(false), 1200);
     return () => clearTimeout(timer);
   }, [showToast]);
 
-  const formatChannelStatus = (value) => {
-    if (!value) return "Unknown";
-    return value.charAt(0).toUpperCase() + value.slice(1);
-  };
+  useEffect(() => {
+    if (!showCartToast) return undefined;
+    const timer = setTimeout(() => setShowCartToast(false), 2200);
+    return () => clearTimeout(timer);
+  }, [showCartToast]);
 
   return (
     <>
       {showToast && (
         <div className="order-toast" role="status" aria-live="polite">
           Thank you! Your order is confirmed.
+        </div>
+      )}
+      {showCartToast && (
+        <div className="cart-toast" role="status" aria-live="polite">
+          <span>Added to cart.</span>
+          <button type="button" onClick={() => { setShowCartToast(false); window.location.href = "/cart"; }}>
+            Go to Cart
+          </button>
         </div>
       )}
       <div className={`product-card ${!product.available ? "unavailable" : ""}`}>
@@ -113,7 +129,10 @@ const ProductsCard = ({ product }) => {
         <p><strong>Price:</strong> ₹{product.price}</p>
 
         {status === "initial" && (
-          <button className="Addbtn" onClick={handleOrderClick}>Order</button>
+          <div className="card-actions">
+            <button className="Addbtn" onClick={handleOrderClick}>Order</button>
+            <button className="cart-btn" onClick={handleAddToCart}>Add to Cart</button>
+          </div>
         )}
 
         {status === "unavailable" && (
@@ -161,13 +180,6 @@ const ProductsCard = ({ product }) => {
                 <div className="success-msg">
                   {message || "Order completed successfully"}
                 </div>
-                {notificationStatus && (
-                  <div className="notification-status">
-                    <p><strong>Customer SMS:</strong> {formatChannelStatus(notificationStatus.customer?.sms)}</p>
-                    <p><strong>Admin SMS:</strong> {formatChannelStatus(notificationStatus.admin?.sms)}</p>
-                    <p><strong>Admins Notified:</strong> {notificationStatus.admin?.recipients ?? 0}</p>
-                  </div>
-                )}
               </>
             )}
 

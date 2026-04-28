@@ -73,6 +73,28 @@
   filter: brightness(1.05);
 }
 
+.cart-btn {
+  margin-top: 10px;
+  padding: 9px 16px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #312e81;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cart-btn:hover {
+  background: #dbeafe;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
 .order-modal-overlay {
   position: fixed;
   inset: 0;
@@ -86,15 +108,28 @@
 }
 
 .order-modal-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-  border-radius: 14px;
-  box-shadow: 0 18px 40px rgba(17, 31, 90, 0.25);
+  background: linear-gradient(165deg, #ffffff 0%, #f4f7ff 55%, #eefbff 100%);
+  border-radius: 18px;
+  box-shadow: 0 26px 50px rgba(17, 31, 90, 0.28);
+  border: 1px solid #d9e4ff;
   width: 100%;
   max-width: 430px;
   padding: 20px;
   position: relative;
   text-align: center;
   animation: modalPop 0.25s ease-out;
+}
+
+.modal-top-tag {
+  display: inline-flex;
+  margin-bottom: 10px;
+  background: #e0f2fe;
+  color: #075985;
+  border: 1px solid #bae6fd;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 5px 10px;
 }
 
 .order-modal-card img {

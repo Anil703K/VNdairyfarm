@@ -18,6 +18,17 @@ status: { type: String, default: "pending" },
 customerName: { type: String },
 customerPhone: { type: String },
 deliveryAddress: { type: String },
+paymentMethod: {
+  type: String,
+  enum: ["cod", "upi", "card"],
+  default: "cod",
+},
+paymentStatus: {
+  type: String,
+  enum: ["pending", "paid", "failed"],
+  default: "pending",
+},
+paymentReference: { type: String },
 notificationStatus: {
   sms: { type: String, default: "pending" }, // pending, sent, failed
   whatsapp: { type: String, default: "pending" },

@@ -53,6 +53,24 @@
   transition: color 0.3s ease;
 }
 
+.nav-link-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cart-link-btn {
+  font-weight: 700;
+}
+
+.orders-link-btn {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
 .nav-list li:hover {
   color:red;
 }
@@ -75,6 +93,7 @@
 
 .profile-pill {
   padding: 8px 14px;
+  border: none;
   border-radius: 999px;
   background: linear-gradient(90deg, #2cb67d 0%, #22a6f2 100%);
   color: #fff;

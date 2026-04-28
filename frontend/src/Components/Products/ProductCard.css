@@ -85,6 +85,28 @@
   filter: brightness(1.05);
 }
 
+.cart-btn {
+  margin-top: 10px;
+  padding: 9px 16px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #312e81;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cart-btn:hover {
+  background: #dbeafe;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
 .order-modal-overlay {
   position: fixed;
   inset: 0;
@@ -154,6 +176,31 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.cart-toast {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 1150;
+  background: #0f766e;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-toast button {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: #fff;
+  color: #0f766e;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .order-form input,

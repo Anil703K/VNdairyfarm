@@ -27,6 +27,19 @@
   margin: 10px 0;
 }
 
+.profile-order-item {
+  border: 1px solid #dbeafe;
+  background: #f8fbff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.profile-order-item p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
 .profile-logout-btn {
   border: 0;
   border-radius: 999px;

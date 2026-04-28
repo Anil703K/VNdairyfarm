@@ -1,25 +1,48 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./MilkCard.css";
-import { createOrder } from "../services/apiClient";
+import { createOrder, createRazorpayPaymentOrder, verifyRazorpayPayment } from "../services/apiClient";
+import { useCart } from "../context/CartContext";
 
 const MilkCard = ({ milk }) => {
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [status, setStatus] = useState("initial");
   const [quantity, setQuantity] = useState(1);
   const [isPlacing, setIsPlacing] = useState(false);
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [notificationStatus, setNotificationStatus] = useState(null);
+  const [showCartToast, setShowCartToast] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+
+  const loadRazorpayScript = () =>
+    new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
 
   const handleOrderClick = () => {
     if (milk.available) {
+      setPaymentMethod("cod");
       setStatus("form");
       setMessage("");
-      setNotificationStatus(null);
       setIsModalOpen(true);
     } else {
       setStatus("unavailable");
     }
+  };
+  const handleAddToCart = () => {
+    if (!milk.available) return;
+    addToCart(milk, 1);
+    setMessage("");
+    setStatus("initial");
+    setShowCartToast(true);
+    window.alert(`${milk.name} added to cart`);
   };
 
   const totalPrice = useMemo(() => Number(milk.price) * quantity, [milk.price, quantity]);
@@ -70,10 +93,57 @@ const MilkCard = ({ milk }) => {
     e.preventDefault();
     setIsPlacing(true);
     try {
-      const response = await createOrder({ product: milk, quantity });
+      let paymentReference = "";
+      let paymentStatus = "pending";
+
+      if (paymentMethod !== "cod") {
+        const scriptReady = await loadRazorpayScript();
+        if (!scriptReady) {
+          throw new Error("Unable to load Razorpay checkout. Check internet and try again.");
+        }
+
+        const amount = Number(milk.price) * Number(quantity || 1);
+        const rpOrder = await createRazorpayPaymentOrder(amount);
+        paymentReference = await new Promise((resolve, reject) => {
+          const razorpay = new window.Razorpay({
+            key: rpOrder.key,
+            amount: rpOrder.amount,
+            currency: rpOrder.currency || "INR",
+            name: "VN Dairy",
+            description: `${milk.name} order payment`,
+            order_id: rpOrder.orderId,
+            handler: async (response) => {
+              try {
+                const verify = await verifyRazorpayPayment(response);
+                if (!verify.verified) {
+                  reject(new Error("Payment verification failed"));
+                  return;
+                }
+                resolve(verify.paymentReference || response.razorpay_payment_id);
+              } catch (error) {
+                reject(new Error(error.message || "Payment verification failed"));
+              }
+            },
+            modal: {
+              ondismiss: () => reject(new Error("Payment was cancelled")),
+            },
+          });
+          razorpay.open();
+        });
+        paymentStatus = "paid";
+      }
+
+      await createOrder({
+        product: milk,
+        quantity,
+        checkout: {
+          paymentMethod,
+          paymentStatus,
+          paymentReference,
+        },
+      });
       setStatus("success");
-      setMessage("Order placed successfully and saved to MongoDB.");
-      setNotificationStatus(response.notificationStatus || null);
+      setMessage("Order placed successfully.");
       setShowToast(true);
       triggerHapticAndSound();
     } catch (err) {
@@ -85,20 +155,35 @@ const MilkCard = ({ milk }) => {
 
   useEffect(() => {
     if (!showToast) return undefined;
-    const timer = setTimeout(() => setShowToast(false), 2400);
+    const timer = setTimeout(() => setShowToast(false), 1200);
     return () => clearTimeout(timer);
   }, [showToast]);
 
-  const formatChannelStatus = (value) => {
-    if (!value) return "Unknown";
-    return value.charAt(0).toUpperCase() + value.slice(1);
-  };
+  useEffect(() => {
+    if (!showCartToast) return undefined;
+    const timer = setTimeout(() => setShowCartToast(false), 2200);
+    return () => clearTimeout(timer);
+  }, [showCartToast]);
 
   return (
     <>
       {showToast && (
         <div className="order-toast" role="status" aria-live="polite">
           Thank you for your feedback! Your order is confirmed.
+        </div>
+      )}
+      {showCartToast && (
+        <div className="cart-toast" role="status" aria-live="polite">
+          <span>Added to cart.</span>
+          <button
+            type="button"
+            onClick={() => {
+              setShowCartToast(false);
+              navigate("/cart");
+            }}
+          >
+            Go to Cart
+          </button>
         </div>
       )}
       <div className={`product-card ${!milk.available ? "unavailable" : ""}`}>
@@ -113,7 +198,10 @@ const MilkCard = ({ milk }) => {
         <p><strong>Price:</strong> ₹{milk.price}</p>
 
         {status === "initial" && (
-          <button className="Addbtn" onClick={handleOrderClick}>Order</button>
+          <div className="card-actions">
+            <button className="Addbtn" onClick={handleOrderClick}>Order</button>
+            <button className="cart-btn" onClick={handleAddToCart}>Add to Cart</button>
+          </div>
         )}
 
         {status === "unavailable" && (
@@ -149,9 +237,29 @@ const MilkCard = ({ milk }) => {
                   <span>{quantity}</span>
                   <button type="button" onClick={() => setQuantity((q) => q + 1)}>+</button>
                 </div>
+                <div className="payment-methods">
+                  <label>
+                    <input
+                      type="radio"
+                      name={`payment-${milk._id || milk.id || milk.name}`}
+                      checked={paymentMethod === "cod"}
+                      onChange={() => setPaymentMethod("cod")}
+                    />
+                    Cash on Delivery
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name={`payment-${milk._id || milk.id || milk.name}`}
+                      checked={paymentMethod === "upi"}
+                      onChange={() => setPaymentMethod("upi")}
+                    />
+                    Razorpay (UPI/Card)
+                  </label>
+                </div>
                 <p className="total-amount">Total: ₹{totalPrice}</p>
                 <button type="submit" className="submit-btn" disabled={isPlacing}>
-                  {isPlacing ? "Placing..." : "Order Now"}
+                  {isPlacing ? "Processing..." : paymentMethod === "cod" ? "Order Now" : "Pay & Order"}
                 </button>
               </form>
             )}
@@ -161,13 +269,6 @@ const MilkCard = ({ milk }) => {
                 <div className="success-msg">
                   {message || "Order completed successfully"}
                 </div>
-                {notificationStatus && (
-                  <div className="notification-status">
-                    <p><strong>Customer SMS:</strong> {formatChannelStatus(notificationStatus.customer?.sms)}</p>
-                    <p><strong>Admin SMS:</strong> {formatChannelStatus(notificationStatus.admin?.sms)}</p>
-                    <p><strong>Admins Notified:</strong> {notificationStatus.admin?.recipients ?? 0}</p>
-                  </div>
-                )}
               </>
             )}
 

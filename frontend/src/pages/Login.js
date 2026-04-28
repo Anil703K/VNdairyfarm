@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Login.css';
 import { Link, useNavigate } from 'react-router-dom';
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
+const INITIAL_FORM_STATE = { email: '', password: '' };
 
 const Login = () => {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState(INITIAL_FORM_STATE);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Reset fields whenever login page opens.
+    setForm(INITIAL_FORM_STATE);
+    setErrors({});
+    setLoading(false);
+  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -62,7 +70,7 @@ const Login = () => {
 
       localStorage.setItem('token', body.token);
       localStorage.setItem('user', JSON.stringify(body.user));
-      setForm({ email: '', password: '' });
+      setForm(INITIAL_FORM_STATE);
       alert('Login Successful!');
       navigate('/profile');
     } catch (err) {
@@ -75,7 +83,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit} noValidate>
+      <form className="login-form" onSubmit={handleSubmit} noValidate autoComplete="off">
         <h2>Login</h2>
 
         <div className="form-group">
@@ -85,6 +93,7 @@ const Login = () => {
             name="email"
             value={form.email}
             onChange={handleChange}
+            autoComplete="off"
           />
           {errors.email && <span className="error">{errors.email}</span>}
         </div>
@@ -96,6 +105,7 @@ const Login = () => {
             name="password"
             value={form.password}
             onChange={handleChange}
+            autoComplete="new-password"
           />
           {errors.password && <span className="error">{errors.password}</span>}
         </div>

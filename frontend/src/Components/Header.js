@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import './Header.css';
 import logo from '../assets/logo.png';
-import { Link } from 'react-router-dom';
 import { Menu, User, X } from 'lucide-react'; 
+import { useCart } from '../context/CartContext';
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
+  const { cartCount } = useCart();
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
+  const navigateWithRefresh = (path) => {
+    setMenuOpen(false);
+    window.location.href = path;
+  };
 
   return (
     <div className="header">
@@ -23,24 +28,32 @@ function Header() {
 
       <div className={`navmenu ${menuOpen ? 'open' : ''}`}>
         <ul className="nav-list">
-          <Link to="/" onClick={() => setMenuOpen(false)}><li>Home</li></Link>
-          <Link to="/MilkList" onClick={() => setMenuOpen(false)}><li>Products</li></Link>
-          <Link to="/About" onClick={() => setMenuOpen(false)}><li>About us</li></Link>
-          <Link to="/Contact" onClick={() => setMenuOpen(false)}><li>Contact us</li></Link>
+          <li><button type="button" onClick={() => navigateWithRefresh('/')} className="nav-link-btn">Home</button></li>
+          <li><button type="button" onClick={() => navigateWithRefresh('/MilkList')} className="nav-link-btn">Products</button></li>
+          <li><button type="button" onClick={() => navigateWithRefresh('/About')} className="nav-link-btn">About us</button></li>
+          <li><button type="button" onClick={() => navigateWithRefresh('/Contact')} className="nav-link-btn">Contact us</button></li>
+          <li>
+            <button type="button" onClick={() => navigateWithRefresh('/orders')} className="nav-link-btn orders-link-btn">
+              Orders
+            </button>
+          </li>
+          <li>
+            <button type="button" onClick={() => navigateWithRefresh('/cart')} className="nav-link-btn cart-link-btn">
+              Cart ({cartCount})
+            </button>
+          </li>
         </ul>
         <div className="auth-actions">
           {!token && (
-            <Link to="/login">
-              <button className="btn" onClick={() => setMenuOpen(false)}>
+              <button className="btn" onClick={() => navigateWithRefresh('/login')}>
                 Login
               </button>
-            </Link>
           )}
           {token && user?.name && (
-            <Link to="/profile" className="profile-pill" onClick={() => setMenuOpen(false)}>
+            <button type="button" className="profile-pill" onClick={() => navigateWithRefresh('/profile')}>
               <User size={16} />
               <span>{user.name}</span>
-            </Link>
+            </button>
           )}
         </div>
       </div>

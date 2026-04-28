@@ -1,0 +1,63 @@
+.orders-page {
+  min-height: calc(100vh - 90px);
+  padding: 24px 16px 40px;
+  background: linear-gradient(135deg, #eaf3ff 0%, #efe9ff 55%, #ddfff5 100%);
+}
+
+.orders-card {
+  max-width: 760px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #d8e2ff;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 18px 45px rgba(68, 97, 242, 0.16);
+}
+
+.orders-card h1 {
+  margin-top: 0;
+  color: #27316a;
+}
+
+.orders-item {
+  border: 1px solid #dbeafe;
+  background: #f8fbff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.orders-item p {
+  margin: 6px 0;
+}
+
+.orders-item button {
+  margin-top: 8px;
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  background: #1d4ed8;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.orders-item-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.orders-item .cancel-order-btn {
+  background: #b91c1c;
+}
+
+.orders-item .cancel-order-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.orders-error {
+  color: #b91c1c;
+  font-weight: 600;
+}

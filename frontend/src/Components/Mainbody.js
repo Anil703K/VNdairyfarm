@@ -1,6 +1,7 @@
 import React from 'react'
  import body_1 from '../assets/body_1.png';
 import './Mainbody.css'
+import AiChatBot from './AiChatBot';
 function Mainbody() {
   return (
     <>
@@ -15,6 +16,7 @@ function Mainbody() {
 </div>
 
          <h1>All Farm Fresh Products At One Place...</h1>
+         <AiChatBot />
         
     </>
   )
