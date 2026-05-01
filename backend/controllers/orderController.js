@@ -73,19 +73,33 @@ const normalizedItems = items.map((it) => ({
 productId: it.productId || "",
 name: it.productName || it.name || "Milk Product",
 quantity: Number(it.quantity || 1),
+unit: it.unit || 'L',
+size: it.size || 1,
 price: Number(it.price || 0),
+basePrice: Number(it.price || 0) * Number(it.quantity || 1),
 }));
+
 const paymentDetails = buildPaymentDetails({ paymentMethod, paymentStatus, paymentReference });
 
-// Create order with all data
+// Set default delivery date (tomorrow) and time (morning)
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+tomorrow.setHours(9, 0, 0, 0); // Default to 9 AM
+
+// Create order with all required fields
 const order = await Order.create({
 user: userId,
 items: normalizedItems,
 totalPrice,
+basePrice: totalPrice,
+finalPrice: totalPrice,
+discountAmount: 0,
 status: paymentDetails.paymentMethod === "cod" || paymentDetails.paymentStatus === "paid" ? "confirmed" : "pending",
 customerName: finalCustomerName,
 customerPhone: finalCustomerPhone,
 deliveryAddress: finalDeliveryAddress,
+deliveryDate: tomorrow,
+deliveryTime: "morning",
 paymentMethod: paymentDetails.paymentMethod,
 paymentStatus: paymentDetails.paymentStatus,
 paymentReference: paymentDetails.paymentReference,
@@ -95,9 +109,10 @@ let customerNotificationStatus = { sms: "skipped" };
 let adminNotificationStatus = { sms: "skipped", recipients: 0 };
 
 if (normalizedCustomerPhone) {
-	customerNotificationStatus = await sendOrderNotifications(normalizedCustomerPhone, {
+	customerNotificationStatus = await sendOrderNotifications(userId, {
 		_id: order._id,
 		customerName: finalCustomerName,
+		customerPhone: normalizedCustomerPhone,
 		items: normalizedItems,
 		totalPrice,
 	}).catch((err) => {
@@ -285,4 +300,106 @@ try {
 	console.error(err);
 	return res.status(500).json({ message: "Payment verification failed" });
 }
+};
+
+export const createCartOrder = async (req, res) => {
+	try {
+		const userId = req.user && req.user.id;
+		if (!userId) return res.status(401).json({ message: "Not authorized" });
+
+		const { items, checkout } = req.body || {};
+		if (!items || !Array.isArray(items) || items.length === 0) {
+			return res.status(400).json({ message: "Cart items are required" });
+		}
+
+		// Calculate total price
+		const totalPrice = items.reduce((sum, item) => {
+			const price = Number(item.price || 0);
+			const quantity = Number(item.quantity || 1);
+			return sum + (price * quantity);
+		}, 0);
+
+		if (totalPrice <= 0) {
+			return res.status(400).json({ message: "Invalid total price" });
+		}
+
+		// Get user details for phone number
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({ message: "User not found" });
+		}
+
+		const normalizedCustomerPhone = normalizePhoneNumber(user.phone);
+		const finalCustomerName = user.name || "Customer";
+
+		// Set default delivery date (tomorrow) and time (morning)
+		const tomorrow = new Date();
+		tomorrow.setDate(tomorrow.getDate() + 1);
+		tomorrow.setHours(9, 0, 0, 0); // Default to 9 AM
+
+		// Create order
+		const order = await Order.create({
+			user: userId,
+			items: items.map(item => ({
+				productId: item.productId || item._id || "",
+				name: item.name || item.productName || "Product",
+				quantity: Number(item.quantity || 1),
+				unit: item.unit || 'L',
+				size: item.size || 1,
+				price: Number(item.price || 0),
+				basePrice: Number(item.price || 0) * Number(item.quantity || 1),
+			})),
+			totalPrice,
+			basePrice: totalPrice,
+			finalPrice: totalPrice,
+			discountAmount: 0,
+			customerName: finalCustomerName,
+			customerPhone: normalizedCustomerPhone,
+			deliveryAddress: user.address || "",
+			deliveryDate: tomorrow,
+			deliveryTime: "morning",
+			...buildPaymentDetails(checkout || {}),
+		});
+
+		// Create notification
+		let customerNotificationStatus = { sms: "skipped" };
+		let adminNotificationStatus = { sms: "skipped", recipients: 0 };
+
+		if (normalizedCustomerPhone) {
+			customerNotificationStatus = await sendOrderNotifications(userId, {
+				_id: order._id,
+				customerName: finalCustomerName,
+				customerPhone: normalizedCustomerPhone,
+				items: items.map(item => ({
+					name: item.name || item.productName || "Product",
+					quantity: item.quantity || 1
+				})),
+				totalPrice,
+			}).catch((err) => {
+				console.error("Notification error:", err);
+				return { sms: "error" };
+			});
+		}
+
+		adminNotificationStatus = await sendAdminOrderNotification({
+			_id: order._id,
+			customerName: finalCustomerName,
+			totalPrice,
+		}).catch((err) => {
+			console.error("Admin notification error:", err);
+			return { sms: "error", recipients: 0 };
+		});
+
+		return res.status(201).json({
+			message: "Order created successfully",
+			order,
+			notifications: {
+				customer: customerNotificationStatus,
+				admin: adminNotificationStatus,
+			},
+		});
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ message: "Server error" });
+	}
 };

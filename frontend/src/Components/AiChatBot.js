@@ -31,7 +31,7 @@ const buildBotReply = (text) => {
   return "I can help with products, orders, login, delivery, and support. Try asking: 'How to place order?'";
 };
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5002";
 
 function AiChatBot() {
   const [open, setOpen] = useState(false);

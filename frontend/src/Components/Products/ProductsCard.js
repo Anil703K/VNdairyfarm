@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ProductCard.css";
 import { createOrder } from "../../services/apiClient";
 import { useCart } from "../../context/CartContext";
 
 const ProductsCard = ({ product }) => {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const [status, setStatus] = useState("initial");
   const [quantity, setQuantity] = useState(1);
@@ -15,9 +17,13 @@ const ProductsCard = ({ product }) => {
 
   const handleOrderClick = () => {
     if (product.available) {
-      setStatus("form");
-      setMessage("");
-      setIsModalOpen(true);
+      // Redirect to payment page with product and quantity
+      navigate('/payment', { 
+        state: { 
+          product, 
+          quantity 
+        } 
+      });
     } else {
       setStatus("unavailable");
     }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import { fetchUserOrders } from '../services/apiClient';
 
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5000';
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:5002';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -60,8 +60,11 @@ const Profile = () => {
       <div className="profile-card">
         <h2>Your Profile</h2>
         <p><strong>Name:</strong> {user.name}</p>
-        <p><strong>Email:</strong> {user.email}</p>
+        <p><strong>Email:</strong> <a href={`mailto:${user.email}`}>{user.email}</a></p>
         <p><strong>Joined:</strong> {new Date(user.createdAt || user._id?.getTimestamp?.() || Date.now()).toLocaleString()}</p>
+        <button type="button" className="profile-logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
       <div className="profile-card">
         <h2>Your Orders</h2>
@@ -73,15 +76,12 @@ const Profile = () => {
             <p><strong>Total:</strong> Rs {order.totalPrice}</p>
             <p><strong>Payment:</strong> {order.paymentMethod || 'cod'} ({order.paymentStatus || 'pending'})</p>
             <p><strong>Items:</strong> {order.items?.map((item) => `${item.name} x${item.quantity}`).join(', ')}</p>
-            <button type="button" className="profile-logout-btn" onClick={() => navigate(`/order-tracking/${order._id}`)}>
+            <button type="button" className="profile-track-btn" onClick={() => navigate(`/order-tracking/${order._id}`)}>
               Track Order
             </button>
           </div>
         ))}
       </div>
-      <button type="button" className="profile-logout-btn" onClick={handleLogout}>
-        Logout
-      </button>
     </div>
   );
 };

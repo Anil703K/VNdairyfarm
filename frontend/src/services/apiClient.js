@@ -1,6 +1,6 @@
 import localProducts from "./ApisData";
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5002";
 
 const parseResponse = async (res) => {
   const body = await res.json().catch(() => ({}));
@@ -162,7 +162,7 @@ export const createRazorpayPaymentOrder = async (amount) => {
 
   let res;
   try {
-    res = await fetch(`${API_BASE}/api/payments/razorpay/order`, {
+    res = await fetch(`${API_BASE}/api/orders/payments/razorpay/order`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -183,7 +183,7 @@ export const verifyRazorpayPayment = async (payload) => {
 
   let res;
   try {
-    res = await fetch(`${API_BASE}/api/payments/razorpay/verify`, {
+    res = await fetch(`${API_BASE}/api/orders/payments/razorpay/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -193,6 +193,46 @@ export const verifyRazorpayPayment = async (payload) => {
     });
   } catch (error) {
     throw new Error("Unable to verify payment");
+  }
+
+  return parseResponse(res);
+};
+
+export const getUserNotifications = async (userId) => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Please login first");
+
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/notifications/user/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    throw new Error("Unable to fetch notifications");
+  }
+
+  return parseResponse(res);
+};
+
+export const markNotificationAsRead = async (notificationId) => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Please login first");
+
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/api/notifications/${notificationId}/read`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    throw new Error("Unable to mark notification as read");
   }
 
   return parseResponse(res);

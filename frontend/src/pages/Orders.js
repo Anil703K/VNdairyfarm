@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { cancelOrder, fetchUserOrders } from "../services/apiClient";
 import "./Orders.css";
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5002";
 
 const Orders = () => {
   const navigate = useNavigate();

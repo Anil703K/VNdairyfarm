@@ -28,10 +28,13 @@ const MilkCard = ({ milk }) => {
 
   const handleOrderClick = () => {
     if (milk.available) {
-      setPaymentMethod("cod");
-      setStatus("form");
-      setMessage("");
-      setIsModalOpen(true);
+      // Redirect to payment page with product and quantity
+      navigate('/payment', { 
+        state: { 
+          product: milk, 
+          quantity 
+        } 
+      });
     } else {
       setStatus("unavailable");
     }

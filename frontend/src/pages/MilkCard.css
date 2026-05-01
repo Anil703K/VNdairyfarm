@@ -1,9 +1,9 @@
 .product-card {
   border: 1px solid #c8d6ff;
-  padding: 20px;
+  padding: 12px;
   border-radius: 12px;
-  width: 300px;
-  margin: 20px auto;
+  width: 200px;
+  margin: 10px auto;
   background: linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
   text-align: center;
   box-shadow: 0 8px 24px rgba(39, 95, 192, 0.12);
@@ -46,46 +46,123 @@
   border: 1px solid #bfd7ff;
 }
 
+.product-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.6s ease-out;
+}
+
 .product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 30px rgba(39, 95, 192, 0.18);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(39, 95, 192, 0.25);
+  border-color: #667eea;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .product-card img {
   width: 100%;
-  height: auto;
+  max-height: 120px;
+  object-fit: cover;
   border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .Addbtn {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #00c389 0%, #2f80ed 100%);
+  margin-top: 12px;
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #86efac 0%, #5eead4 100%);
   border: none;
   color: white;
-  font-weight: bold;
-  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(134, 239, 172, 0.3);
+}
+
+.Addbtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.Addbtn:hover::before {
+  left: 100%;
 }
 
 .Addbtn:hover {
-  filter: brightness(1.05);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 6px 20px rgba(134, 239, 172, 0.4);
+  background: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%);
+}
+
+.Addbtn:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 3px 12px rgba(134, 239, 172, 0.3);
 }
 
 .cart-btn {
-  margin-top: 10px;
-  padding: 9px 16px;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
-  color: #312e81;
-  font-weight: 700;
-  border-radius: 6px;
+  margin-top: 8px;
+  padding: 5px 12px;
+  background: linear-gradient(135deg, #fca5a5 0%, #f9a8d4 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 11px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(252, 165, 165, 0.3);
+}
+
+.cart-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.cart-btn:hover::before {
+  left: 100%;
 }
 
 .cart-btn:hover {
-  background: #dbeafe;
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 6px 20px rgba(252, 165, 165, 0.4);
+  background: linear-gradient(135deg, #f87171 0%, #f472b6 100%);
+}
+
+.cart-btn:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 3px 12px rgba(252, 165, 165, 0.3);
 }
 
 .card-actions {
@@ -99,25 +176,46 @@
   position: fixed;
   inset: 0;
   background: rgba(20, 26, 58, 0.45);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
   padding: 16px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .order-modal-card {
   background: linear-gradient(165deg, #ffffff 0%, #f4f7ff 55%, #eefbff 100%);
   border-radius: 18px;
-  box-shadow: 0 26px 50px rgba(17, 31, 90, 0.28);
-  border: 1px solid #d9e4ff;
+  box-shadow: 0 30px 60px rgba(17, 31, 90, 0.35);
+  border: 1px solid rgba(102, 126, 234, 0.1);
   width: 100%;
   max-width: 430px;
-  padding: 20px;
+  padding: 25px;
   position: relative;
   text-align: center;
-  animation: modalPop 0.25s ease-out;
+  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal-top-tag {
@@ -188,17 +286,43 @@
 }
 
 .submit-btn {
-  padding: 10px;
-  background: linear-gradient(90deg, #7f5af0 0%, #2cb67d 100%);
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 13px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.submit-btn:hover::before {
+  left: 100%;
 }
 
 .submit-btn:hover {
-  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .success-msg {

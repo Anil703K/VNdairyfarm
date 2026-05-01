@@ -13,6 +13,11 @@ import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import walletRoutes from "./routes/walletRoutes.js";
+import loyaltyRoutes from "./routes/loyaltyRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
 import { seedProductsIfEmpty } from "./controllers/productController.js";
 
 const app = express();
@@ -78,6 +83,11 @@ app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/orders", orderLimiter, orderRoutes);
 app.use("/api/chat", chatLimiter, chatRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/wallet", walletRoutes);
+app.use("/api/loyalty", loyaltyRoutes);
+app.use("/api/coupons", couponRoutes);
 
 // ✅ Health check (IMPORTANT for Render)
 app.get("/", (req, res) => {

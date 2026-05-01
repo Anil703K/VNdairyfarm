@@ -3,6 +3,7 @@ import authMiddleware from "../middleware/authMiddleware.js";
 import {
   cancelOrder,
   createOrder,
+  createCartOrder,
   createRazorpayOrder,
   getOrderTracking,
   getOrdersByUser,
@@ -13,12 +14,13 @@ import {
 const router = express.Router();
 
 
-router.post("/orders", authMiddleware, createOrder);
+router.post("/", authMiddleware, createOrder);
+router.post("/cart", authMiddleware, createCartOrder);
 router.post("/payments/razorpay/order", authMiddleware, createRazorpayOrder);
 router.post("/payments/razorpay/verify", authMiddleware, verifyRazorpayPayment);
-router.get("/orders/:userId", authMiddleware, getOrdersByUser);
-router.get("/orders/track/:orderId", authMiddleware, getOrderTracking);
-router.patch("/orders/:orderId/cancel", authMiddleware, cancelOrder);
+router.get("/track/:orderId", authMiddleware, getOrderTracking);
+router.get("/:userId", authMiddleware, getOrdersByUser);
+router.patch("/:orderId/cancel", authMiddleware, cancelOrder);
 
 
 export default router;

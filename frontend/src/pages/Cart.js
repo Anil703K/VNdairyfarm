@@ -255,8 +255,8 @@ const Cart = () => {
               <button type="button" className="clear-btn" onClick={clearCart}>
                 Clear Cart
               </button>
-              <button type="button" className="checkout-btn" onClick={handleCheckout} disabled={placing}>
-                {placing ? "Placing..." : "Checkout"}
+              <button type="button" className="proceed-payment-btn" onClick={() => navigate('/payment', { state: { cartItems } })}>
+                Proceed to Payment
               </button>
             </div>
             {message && <p className="cart-message">{message}</p>}

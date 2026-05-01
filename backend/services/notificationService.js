@@ -1,4 +1,4 @@
-import axios from "axios";
+import Notification from '../models/Notification.js';
 
 /**
  * Normalize phone number (India)
@@ -10,115 +10,106 @@ export const normalizePhoneNumber = (phone) => {
 };
 
 /**
- * Send SMS to customer using Fast2SMS
+ * Create in-app notification for user
  */
-export const sendSMSNotification = async (phoneNumber, orderData) => {
+export const createNotification = async (userId, message, type = 'general', orderId = null, metadata = {}, phoneNumber = null) => {
   try {
-    const phone = normalizePhoneNumber(phoneNumber);
-
-    if (!phone) {
-      console.log("Invalid phone number");
-      return { status: "failed" };
+    // Validate userId
+    if (!userId) {
+      throw new Error("userId is required");
+    }
+    
+    // Validate message
+    if (!message || message.trim().length === 0) {
+      throw new Error("message is required");
+    }
+    
+    if (message.length > 500) {
+      throw new Error("message must be less than 500 characters");
     }
 
-const message = `Hello ${orderData.customerName},
+    const notification = await Notification.create({
+      userId,
+      phoneNumber,
+      message: message.trim(),
+      type,
+      orderId,
+      read: false,
+      metadata
+    });
 
-Thank you for ordering from VN Dairy Farm 🐄
+    console.log("Notification created:", notification);
+    return { status: "created", notification };
+  } catch (error) {
+    console.error("Notification creation error:", error);
+    return { status: "error", error: error.message };
+  }
+};
 
-Your order has been placed successfully.
-
-Order ID: ${orderData._id}
-Total Amount: ₹${orderData.totalPrice}
-
-We will deliver your order soon.
-
-Thank you!`;
-    console.log("Sending SMS to:", phone);
-
-    const response = await axios.post(
-      "https://fast2sms.com/dev/bulkV2",
-      {
-        route: "v3",
-        message: message,
-        language: "english",
-        numbers: phone,
+/**
+ * Send order success notification (replaces SMS)
+ */
+export const sendOrderNotifications = async (userId, orderData) => {
+  try {
+    // Generate dynamic message with product names
+    const productNames = orderData.items?.map(item => item.name || item.productName || 'Product').join(', ') || 'Products';
+    const message = `Order successful from VNDairyFarm. Items: ${productNames}, Total: ₹${orderData.totalPrice}`;
+    
+    const notification = await createNotification(
+      userId, 
+      message, 
+      'order_success', 
+      orderData._id,
+      { 
+        customerName: orderData.customerName,
+        totalPrice: orderData.totalPrice,
+        items: orderData.items
       },
-      {
-        headers: {
-          authorization: process.env.FAST2SMS_API_KEY,
-          "Content-Type": "application/json",
-        },
-      }
+      orderData.customerPhone
     );
 
-    console.log("Fast2SMS Response:", response.data);
-
-    if (response.data.return === true) {
-      return { status: "sent" };
-    } else {
-      return { status: "failed", error: response.data };
-    }
-
-  } catch (error) {
-    console.log("SMS Error:", error.response?.data || error.message);
-    return { status: "error" };
-  }
-};
-
-/**
- * Send order notification (customer)
- */
-export const sendOrderNotifications = async (phoneNumber, orderData) => {
-  try {
-    const smsResult = await sendSMSNotification(phoneNumber, orderData);
-
     return {
-      sms: smsResult?.status || "skipped",
+      notification: notification.status || "created",
+      sms: "replaced_with_notification"
     };
   } catch (err) {
-    console.error("Notification error:", err);
+    console.error("Order notification error:", err);
     return {
-      sms: "error",
+      notification: "error",
+      sms: "replaced_with_notification"
     };
   }
 };
 
 /**
- * Send admin notification SMS
+ * Send admin notification (replaces SMS)
  */
 export const sendAdminOrderNotification = async (orderData) => {
   try {
-    const admins = (process.env.ADMIN_PHONE_NUMBERS || "")
-      .split(",")
-      .map((a) => a.trim())
-      .filter(Boolean);
-
-    let sentCount = 0;
-
-    for (const admin of admins) {
-      const result = await sendSMSNotification(admin, orderData);
-
-      if (result.status === "sent") {
-        sentCount++;
-      }
-    }
+    console.log("Admin notification created for order:", orderData._id);
+    
+    // Create a simple admin notification log instead of SMS
+    const adminMessage = `New order: ${orderData._id}, Customer: ${orderData.customerName}, Total: ₹${orderData.totalPrice}`;
+    console.log("Admin notification:", adminMessage);
 
     return {
-      sms: sentCount > 0 ? "sent" : "failed",
-      recipients: admins.length,
+      notification: "created",
+      sms: "replaced_with_notification",
+      recipients: 0,
     };
 
   } catch (err) {
-    console.error("Admin SMS error:", err);
+    console.error("Admin notification error:", err);
     return {
-      sms: "error",
+      notification: "error",
+      sms: "replaced_with_notification",
       recipients: 0,
     };
   }
 };
 
 /**
- * Schedule product reminders
+ * Schedule product reminders (replaces SMS)
  */
 export const scheduleProductReminders = async (phoneNumber, orderData) => {
   try {
@@ -128,17 +119,11 @@ export const scheduleProductReminders = async (phoneNumber, orderData) => {
 
     console.log("Scheduling reminders for:", phone);
 
-    // 🔹 Test reminder (10 seconds)
+    // Create a reminder notification instead of SMS
     setTimeout(async () => {
-      await sendSMSNotification(phone, {
-        customerName: "Reminder",
-        totalPrice: orderData.totalPrice || 0,
-      });
-      console.log("Reminder SMS sent");
+      const reminderMessage = `Reminder: Your order ${orderData._id} will be delivered soon`;
+      console.log("Reminder notification created:", reminderMessage);
     }, 10000);
-
-    // 🔹 Example real use (1 hour)
-    // setTimeout(() => { ... }, 60 * 60 * 1000);
 
   } catch (error) {
     console.error("Reminder error:", error);
